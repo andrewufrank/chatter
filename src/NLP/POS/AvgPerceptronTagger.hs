@@ -44,7 +44,7 @@ import System.Random.Shuffle (shuffleM)
 taggerID :: ByteString
 taggerID = pack "NLP.POS.AvgPerceptronTagger"
 
-readTagger :: Tag t => ByteString -> Maybe (POSTagger t) -> Either String (POSTagger t)
+readTagger :: POSTags t => ByteString -> Maybe (POSTagger t) -> Either String (POSTagger t)
 readTagger bs backoff = do
   model <- decode bs
   return $ mkTagger model backoff
@@ -56,7 +56,7 @@ readTagger bs backoff = do
 -- tokenizer, and Erik Kow's fullstop sentence segmenter
 -- (<http://hackage.haskell.org/package/fullstop>) as a sentence
 -- splitter.
-mkTagger :: Tag t => Perceptron -> Maybe (POSTagger t) -> POSTagger t
+mkTagger :: POSTags t => Perceptron -> Maybe (POSTagger t) -> POSTagger t
 mkTagger per mTgr = POSTagger { posTagger  = tag per
                               , posTrainer = \exs -> do
                                   newPer <- trainInt itterations per exs
@@ -87,11 +87,11 @@ itterations = 5
 -- >>> tag tagger $ map T.words $ T.lines "Dear sir"
 -- "Dear/jj Sirs/nns :/: Let/vb"
 --
-trainNew :: Tag t => (Text -> t) -> Text -> IO Perceptron
+trainNew :: POSTags t => (Text -> t) -> Text -> IO Perceptron
 trainNew parser rawCorpus = train parser emptyPerceptron rawCorpus
 
 -- | Train a new 'Perceptron' on a corpus of files.
-trainOnFiles :: Tag t => (Text -> t) -> [FilePath] -> IO Perceptron
+trainOnFiles :: POSTags t => (Text -> t) -> [FilePath] -> IO Perceptron
 trainOnFiles parser corpora = foldM step emptyPerceptron corpora
   where
     step :: Perceptron -> FilePath -> IO Perceptron
@@ -108,7 +108,7 @@ trainOnFiles parser corpora = foldM step emptyPerceptron corpora
 -- If you're using multiple input files, this can be useful to improve
 -- performance (by folding over the files).  For example, see `trainOnFiles`
 --
-train :: Tag t => (Text -> t) -- ^ The POS tag parser.
+train :: POSTags t => (Text -> t) -- ^ The POS tag parser.
       -> Perceptron -- ^ The inital model.
       -> Text       -- ^ Training data; formatted with one sentence
                     -- per line, and standard POS tags after each
@@ -128,7 +128,7 @@ startToks = [Token "-START-", Token "-START2-"]
 endToks :: [Token]
 endToks = [Token "-END-", Token "-END2-"]
 
--- | Tag a document (represented as a list of 'Sentence's) with a
+-- | POSTags a document (represented as a list of 'Sentence's) with a
 -- trained 'Perceptron'
 --
 -- Ported from Python:
@@ -155,11 +155,11 @@ endToks = [Token "-END-", Token "-END2-"]
 -- >             prev = tag
 -- >     return tokens
 --
-tag :: Tag t => Perceptron -> [Sentence] -> [TaggedSentence t]
+tag :: POSTags t => Perceptron -> [Sentence] -> [TaggedSentence t]
 tag per corpus = map (tagSentence per) corpus
 
--- | Tag a single sentence.
-tagSentence :: Tag t => Perceptron -> Sentence -> TaggedSentence t
+-- | POSTags a single sentence.
+tagSentence :: POSTags t => Perceptron -> Sentence -> TaggedSentence t
 tagSentence per sent = let
 
   tags = (map tokenToClass startToks) ++ map (predictPos per) features
@@ -203,17 +203,17 @@ tagSentence per sent = let
 -- >                      open(save_loc, 'wb'), -1)
 -- >     return None
 --
-trainInt :: Tag t =>
+trainInt :: POSTags t =>
             Int -- ^ The number of times to iterate over the training
                 -- data, randomly shuffling after each iteration. (@5@
                 -- is a reasonable choice.)
          -> Perceptron -- ^ The 'Perceptron' to train.
-         -> [TaggedSentence t] -- ^ The training data. (A list of @[(Text, Tag)]@'s)
+         -> [TaggedSentence t] -- ^ The training data. (A list of @[(Text, POSTags)]@'s)
          -> IO Perceptron    -- ^ A trained perceptron.  IO is needed
                              -- for randomization.
 trainInt itr per examples = trainCls itr per $ toClassLst $ map unzipTags examples
 
-toClassLst :: Tag t => [(Sentence, [t])] -> [(Sentence, [Class])]
+toClassLst :: POSTags t => [(Sentence, [t])] -> [(Sentence, [Class])]
 toClassLst tagged = map (\(x, y)->(x, map (Class . T.unpack . fromTag) y)) tagged
 
 trainCls :: Int -> Perceptron -> [(Sentence, [Class])] -> IO Perceptron

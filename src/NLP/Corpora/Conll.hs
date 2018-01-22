@@ -19,9 +19,9 @@ import NLP.Types.Tree hiding (Chunk)
 import NLP.Types.IOB
 
 -- | Parse an IOB-formatted Conll corpus into TagagedSentences.
-parseTaggedSentences :: Text -> [TaggedSentence Tag]
+parseTaggedSentences :: Text -> [TaggedSentence POSTag]
 parseTaggedSentences rawCorpus =
-  let res :: Either Error [[IOBChunk Chunk Tag]]
+  let res :: Either Error [[IOBChunk Chunk POSTag]]
       res = parseIOB rawCorpus
   in case res of
        Left            err -> []
@@ -61,7 +61,7 @@ instance Arbitrary Chunk where
 instance Serialize Chunk
 
 
-instance T.Tag Tag where
+instance T.POSTags POSTag where
   fromTag = showTag
 
   parseTag txt = case readTag txt of
@@ -78,11 +78,11 @@ instance T.Tag Tag where
 
   isDt tag = tag `elem` [DT]
 
-instance Arbitrary Tag where
+instance Arbitrary POSTag where
   arbitrary = elements [minBound ..]
-instance Serialize Tag
+instance Serialize POSTag
 
-readTag :: Text -> Either Error Tag
+readTag :: Text -> Either Error POSTag
 readTag "#" = Right Hash
 readTag "$" = Right Dollar
 readTag "(" = Right Op_Paren
@@ -105,7 +105,7 @@ tagTxtPatterns = [ ("$", "dollar")
 reversePatterns :: [(Text, Text)]
 reversePatterns = map (\(x,y) -> (y,x)) tagTxtPatterns
 
-showTag :: Tag -> Text
+showTag :: POSTag -> Text
 showTag Hash = "#"
 showTag Op_Paren = "("
 showTag Cl_Paren = ")"
@@ -134,7 +134,7 @@ instance T.ChunkTag Chunk where
 --   * The PennTreebank tags, listed here: <https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html> (which contributed LS over the items in the corpus).
 --   * The tags: START, END, and Unk, which are used by Chatter.
 --
-data Tag = START -- ^ START tag, used in training.
+data POSTag = START -- ^ START tag, used in training.
          | END -- ^ END tag, used in training.
          | Hash -- ^ #
          | Dollar -- ^ $

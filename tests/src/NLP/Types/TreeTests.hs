@@ -48,5 +48,5 @@ tests = testGroup "NLP.Types.Tree"
           ]
         ]
 
-mkShowChunkedSentTest :: (ChunkTag c, Tag t) => (ChunkedSentence c t, Text) -> TestTree
+mkShowChunkedSentTest :: (ChunkTag c, POSTags t) => (ChunkedSentence c t, Text) -> TestTree
 mkShowChunkedSentTest (sent, oracle) = testCase (T.unpack oracle) (oracle @=? showChunkedSent sent)

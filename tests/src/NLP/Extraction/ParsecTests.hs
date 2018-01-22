@@ -63,7 +63,7 @@ prop_followedBy taggedSent = taggedSent /= TaggedSent []
   in (POS theTag theToken) == actual
 
 
-parseNounPhrase :: TaggedSentence B.Tag -> Maybe (ChunkOr B.Chunk B.Tag)
+parseNounPhrase :: TaggedSentence B.POSTag -> Maybe (ChunkOr B.Chunk B.POSTag)
 parseNounPhrase sent =
   case parse nounPhrase "parseNounPhrase Test" sent of
     Left  _ -> Nothing

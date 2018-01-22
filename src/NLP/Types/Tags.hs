@@ -49,7 +49,7 @@ class (Ord a, Eq a, Read a, Show a, Generic a, Serialize a) => ChunkTag a where
 -- that that is done correctly.
 --
 -- This /may/ get renamed to POSTag at some later date.
-class (Ord a, Eq a, Read a, Show a, Generic a, Serialize a) => Tag a where
+class (Ord a, Eq a, Read a, Show a, Generic a, Serialize a) => POSTags a where
   fromTag :: a -> Text
   parseTag :: Text -> a
   tagUNK :: a
@@ -76,8 +76,8 @@ newtype RawTag = RawTag Text
 
 instance Serialize RawTag
 
--- | Tag instance for unknown tagsets.
-instance Tag RawTag where
+-- | POSTags instance for unknown tagsets.
+instance POSTags RawTag where
   fromTag (RawTag t) = t
 
   parseTag t = RawTag t

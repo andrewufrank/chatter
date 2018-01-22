@@ -13,7 +13,7 @@ import Test.Tasty ( TestTree, defaultIngredients, defaultMainWithIngredients
 import Test.Tasty.Ingredients (Ingredient )
 import Test.Tasty.Runners.AntXML ( antXMLRunner )
 
-import NLP.Types (Tag(..), parseTag, RawTag(..), POSTagger(..))
+import NLP.Types (POSTags(..), parseTag, RawTag(..), POSTagger(..))
 import NLP.POS (tagText, train)
 import NLP.Corpora.Parsing (readPOS)
 

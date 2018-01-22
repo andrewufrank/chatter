@@ -136,7 +136,7 @@ prop_emptyAlwaysUnk :: String -> Bool
 prop_emptyAlwaysUnk input = all (\(POS y _) -> y == tagUNK) (concatMap unTS $ tag emptyTagger inputTxt)
   where inputTxt = T.pack input
 
-trainAndTagTest :: Tag t => Maybe (POSTagger t)
+trainAndTagTest :: POSTags t => Maybe (POSTagger t)
                 -> (Text, Map Text t, LT.CaseSensitive, Text, Text) -> TestTree
 trainAndTagTest tgr (name, table, sensitive, input, oracle) = testCase (T.unpack name) mkAndTest
   where mkAndTest = let trained = LT.mkTagger table sensitive tgr

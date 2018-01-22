@@ -18,7 +18,7 @@ main = do
   let output = last args
       corpora = init args
 
-      avgPerChunker :: Avg.Chunker C.Chunk C.Tag
+      avgPerChunker :: Avg.Chunker C.Chunk C.POSTag
       avgPerChunker = Avg.mkChunker emptyPerceptron
 
   rawCorpus <- mapM T.readFile corpora

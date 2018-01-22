@@ -213,6 +213,12 @@ test-suite tests
                      NLP.POS.UnambiguousTaggerTests
                      NLP.Extraction.ParsecTests
                      NLP.TypesTests
+                     NLP.Chunk.AvgPerceptronChunkerTests
+                     NLP.Corpora.BrownTests
+                     NLP.Corpora.ConllTests
+                     NLP.POS.LiteralTaggerTests
+                     NLP.Types.IOBTests
+                     NLP.Types.TreeTests
                      Data.DefaultMapTests
                      Corpora
                      TestUtils

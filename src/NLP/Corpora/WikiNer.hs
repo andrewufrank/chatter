@@ -76,12 +76,12 @@ import           NLP.Types.Tags
 
 import           Paths_chatter
 
-parseWikiNer :: Text -> Either Error [[IOBChunk Chunk Conll.Tag]]
+parseWikiNer :: Text -> Either Error [[IOBChunk Chunk Conll.POSTag]]
 parseWikiNer = parseIOB
 
 -- | Convert wikiNer format to basic IOB (one token perline, space
 -- separated tags, and a blank line between each sentence)
-parseIOB :: (ChunkTag chunk, Tag tag) => Text -> Either Error [[IOBChunk chunk tag]]
+parseIOB :: (ChunkTag chunk, POSTags tag) => Text -> Either Error [[IOBChunk chunk tag]]
 parseIOB input = sequence $ map (parseSentence . toIOBLines) (filter (/="") $ T.lines input)
 
 -- | Different classes of Named Entity used in the WikiNER data set.
@@ -103,7 +103,7 @@ instance ChunkTag Chunk where
   parseChunk txt = toEitherErr $ readEither (T.unpack txt)
   notChunk = C_O
 
-wikiNerChunker :: IO (Chunker Chunk Conll.Tag)
+wikiNerChunker :: IO (Chunker Chunk Conll.POSTag)
 wikiNerChunker = do
   dir <- getDataDir
   loadChunker (dir </> "data" </> "models" </> "wikiner.ner.model.gz")
@@ -114,7 +114,7 @@ toIOBLines :: Text -> [Text]
 toIOBLines sent = map (T.replace "|" " ") (T.words sent)
 
 -- | Train a chunker on a provided corpus.
-trainChunker :: [FilePath] -> IO (Chunker Chunk Conll.Tag)
+trainChunker :: [FilePath] -> IO (Chunker Chunk Conll.POSTag)
 trainChunker corpora = do
   content <- mapM T.readFile corpora
 
@@ -122,7 +122,7 @@ trainChunker corpora = do
 
       eiobs = parseWikiNer trainingText
 
-      chunker :: Chunker Chunk Conll.Tag
+      chunker :: Chunker Chunk Conll.POSTag
       chunker = mkChunker emptyPerceptron
 
   case eiobs of

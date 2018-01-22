@@ -17,7 +17,7 @@ main = do
   let modelFile = args!!0
       corpora = tail args
   putStrLn "Loading model..."
-  tagger <- (loadTagger modelFile:: IO (POSTagger B.Tag))
+  tagger <- (loadTagger modelFile:: IO (POSTagger B.POSTag))
   putStrLn "...model loaded."
   rawCorpus <- mapM T.readFile corpora
   let taggedCorpora = map readPOS $ concatMap T.lines $ rawCorpus
