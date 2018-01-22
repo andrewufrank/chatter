@@ -1,9 +1,8 @@
 flags: {}
 packages:
 - '.'
-- /home/frank/Workspace8/LitTextWork/LitText/
+- /home/frank/Workspace8/uniform/uniform-strings/
 extra-deps:
-- cereal-text-0.1.0.2
 - fullstop-0.1.4
 - tokenize-0.3.0
 resolver: lts-9.1

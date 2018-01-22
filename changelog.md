@@ -1,5 +1,13 @@
 = HEAD =
- - Slight bump in the dependency on cereal to make it easier to get chatter into stackage.
+
+= 0.9.2.0 =
+    changed class Tag to POSTags
+    changed all data Tag to POSTag (to conform to the other xTag data types)
+    added a number of modules to "other modules" in cabal component tests
+
+
+
+     - Slight bump in the dependency on cereal to make it easier to get chatter into stackage.
 
 = 0.9.1.0 =
 
