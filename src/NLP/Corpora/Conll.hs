@@ -2,7 +2,10 @@
 {-# LANGUAGE DeriveGeneric #-}
 -- | Data types representing the POS tags and Chunk tags derived from
 -- the Conll2000 training corpus.
-module NLP.Corpora.Conll where
+module NLP.Corpora.Conll (
+    module NLP.Corpora.Conll
+    , NLP.POStags (..)
+    ) where
 
 import Data.Serialize (Serialize)
 import qualified Data.Text as T
@@ -13,32 +16,32 @@ import Test.QuickCheck.Gen (elements)
 
 import GHC.Generics
 
-import qualified NLP.Types.Tags as T
+import qualified NLP.Types.Tags as NLP
 import NLP.Types.General
 import NLP.Types.Tree hiding (Chunk)
 import NLP.Types.IOB
 
 -- | Parse an IOB-formatted Conll corpus into TagagedSentences.
-parseTaggedSentences :: Text -> [TaggedSentence POSTag]
+parseTaggedSentences :: Text -> [TaggedSentence POStag]
 parseTaggedSentences rawCorpus =
-  let res :: Either Error [[IOBChunk Chunk POSTag]]
+  let res :: Either Error [[IOBChunk Chunk POStag]]
       res = parseIOB rawCorpus
   in case res of
        Left            err -> []
        Right taggedCorpora -> map toTaggedSentence taggedCorpora
 
 -- | Named entity categories defined for the Conll 2003 task.
-data NERTag = PER
+data NERtag = PER
             | ORG
             | LOC
             | MISC
   deriving (Read, Show, Ord, Eq, Generic, Enum, Bounded)
 
-instance Arbitrary NERTag where
+instance Arbitrary NERtag where
   arbitrary = elements [minBound..]
 
-instance Serialize NERTag
-instance T.NERTag NERTag
+instance Serialize NERtag
+instance NLP.NERtags NERtag
 
 -- | Phrase chunk tags defined for the Conll task.
 data Chunk = ADJP
@@ -61,7 +64,7 @@ instance Arbitrary Chunk where
 instance Serialize Chunk
 
 
-instance T.POSTags POSTag where
+instance NLP.POStags POStag where
   fromTag = showTag
 
   parseTag txt = case readTag txt of
@@ -78,11 +81,11 @@ instance T.POSTags POSTag where
 
   isDt tag = tag `elem` [DT]
 
-instance Arbitrary POSTag where
+instance Arbitrary POStag where
   arbitrary = elements [minBound ..]
-instance Serialize POSTag
+instance Serialize POStag
 
-readTag :: Text -> Either Error POSTag
+readTag :: Text -> Either Error POStag
 readTag "#" = Right Hash
 readTag "$" = Right Dollar
 readTag "(" = Right Op_Paren
@@ -105,7 +108,7 @@ tagTxtPatterns = [ ("$", "dollar")
 reversePatterns :: [(Text, Text)]
 reversePatterns = map (\(x,y) -> (y,x)) tagTxtPatterns
 
-showTag :: POSTag -> Text
+showTag :: POStag -> Text
 showTag Hash = "#"
 showTag Op_Paren = "("
 showTag Cl_Paren = ")"
@@ -120,7 +123,7 @@ showTag tag = replaceAll reversePatterns (T.pack $ show tag)
 replaceAll :: [(Text, Text)] -> (Text -> Text)
 replaceAll patterns = foldl (.) id (map (uncurry T.replace) patterns)
 
-instance T.ChunkTag Chunk where
+instance NLP.ChunkTag Chunk where
   fromChunk = T.pack . show
   parseChunk txt = toEitherErr $ readEither $ T.unpack txt
   notChunk = O
@@ -134,7 +137,7 @@ instance T.ChunkTag Chunk where
 --   * The PennTreebank tags, listed here: <https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html> (which contributed LS over the items in the corpus).
 --   * The tags: START, END, and Unk, which are used by Chatter.
 --
-data POSTag = START -- ^ START tag, used in training.
+data POStag = START -- ^ START tag, used in training.
          | END -- ^ END tag, used in training.
          | Hash -- ^ #
          | Dollar -- ^ $

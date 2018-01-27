@@ -42,14 +42,14 @@ instance Arbitrary IOB where
 stripTok :: Token -> Token
 stripTok (Token t) = Token $ T.strip t
 
-prop_tagsParse :: IOB -> Token -> C.Chunk -> C.POSTag -> Property
+prop_tagsParse :: IOB -> Token -> C.Chunk -> C.POStag -> Property
 prop_tagsParse iob (stripTok -> Token txt) chunk tag =
     T.empty /= txt && T.find isSpace txt == Nothing ==>
   -- IOB format doesn't /appear/ to allow spaces within tokens, hence the predicate above.
   let tok   = Token txt
       input = T.intercalate " " [ txt, fromTag tag
                     , T.intercalate "" [(T.pack $ show iob), "-", fromChunk chunk]]
-      result :: Either Error (IOBChunk C.Chunk C.POSTag)
+      result :: Either Error (IOBChunk C.Chunk C.POStag)
       result = parseIOBLine input
 
       constr = case iob of
@@ -58,10 +58,10 @@ prop_tagsParse iob (stripTok -> Token txt) chunk tag =
                  O -> OChunk (POS tag tok)
   in result == (Right constr)
 
-test_parseIOB :: (ChunkTag c, POSTags t) => (Text, [[IOBChunk c t]]) -> Assertion
+test_parseIOB :: (ChunkTag c, POStags t) => (Text, [[IOBChunk c t]]) -> Assertion
 test_parseIOB (txt, Right -> oracle) = oracle @=? parseIOB txt
 
-iobExample :: (Text, [[IOBChunk C.Chunk C.POSTag]])
+iobExample :: (Text, [[IOBChunk C.Chunk C.POStag]])
 iobExample = (T.unlines [ "Confidence NN B-NP "
                         , "in IN B-PP"
                         , "the DT B-NP"

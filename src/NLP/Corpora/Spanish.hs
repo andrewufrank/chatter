@@ -48,7 +48,7 @@ import qualified NLP.Types.Tags as NLPtypes
 --type POSTagEng = Conll.Tag   -- renames the ConllTag
 --instance CharChains2 POSTagEng Text
 
-data POSTagSpanish =   -- copied from http://universaldependencies.org/u/pos/
+data POStagSpanish =   -- copied from http://universaldependencies.org/u/pos/
     START  | -- START tag, used in training.
     END | --END tag, used in training.
 --    Adjectives
@@ -159,7 +159,7 @@ data POSTagSpanish =   -- copied from http://universaldependencies.org/u/pos/
         deriving (Read, Show, Ord, Eq, Generic, Enum, Bounded)
 
 
-instance NLPtypes.POSTags POSTagSpanish where
+instance NLPtypes.POStags POStagSpanish where
 --parseTag :: Text -> POSTag
     parseTag txt = case readTag txt of
                    Left  _ -> NLPtypes.tagUNK
@@ -174,11 +174,11 @@ instance NLPtypes.POSTags POSTagSpanish where
 
     isDt tag = tag `elem` [Da0000, Dd0000,  De0000, Di0000,  Dn0000,  Do0000, Dp0000,  Dt0000   ]
 
-instance Arbitrary POSTagSpanish where
+instance Arbitrary POStagSpanish where
   arbitrary = elements [minBound ..]
-instance Serialize POSTagSpanish
+instance Serialize POStagSpanish
 
-readTag :: Text -> ErrOrVal POSTagSpanish
+readTag :: Text -> ErrOrVal POStagSpanish
 --readTag "#" = Right Hash
 --readTag "$" = Right Dollar
 --readTag "(" = Right Op_Paren
@@ -201,7 +201,7 @@ readTag txt =
 --reversePatterns :: [(Text, Text)]
 --reversePatterns = map (\(x,y) -> (y,x)) tagTxtPatterns
 
-showTag :: POSTagSpanish -> Text
+showTag :: POStagSpanish -> Text
 --showTag Hash = "#"
 --showTag Op_Paren = "("
 --showTag Cl_Paren = ")"
@@ -216,11 +216,11 @@ showTag tag = T.toLower   (s2t $ show tag)
 --replaceAll :: [(Text, Text)] -> (Text -> Text)
 --replaceAll patterns = foldl (.) id (map (uncurry  T.replace) patterns)
 
---readTag :: Text -> ErrOrVal POSTagSpanish
+--readTag :: Text -> ErrOrVal POStagSpanish
 --readTag txt = maybe2errorP . read . t2s $ txt
 --
 --maybe2errorP  :: Maybe a -> ErrOrVal a
---maybe2errorP Nothing = Left "readTag POSTagSpanish 34232"
+--maybe2errorP Nothing = Left "readTag POStagSpanish 34232"
 --maybe2errorP (Just a) = Right a
 
 readOrErr :: Read a => Text -> Either Text a
@@ -228,15 +228,15 @@ readOrErr    t = case (readEither (t2s t)) of
                         Left msg -> Left (s2t msg)
                         Right a -> Right a
 
---instance CharChains2 POSTagSpanish String where
+--instance CharChains2 POStagSpanish String where
 --    show' =  show
---instance CharChains2 POSTagSpanish Text where
+--instance CharChains2 POStagSpanish Text where
 --    show' =  s2t . show
 --
---instance Zeros POSTagSpanish where zero = NLPtypes.tagUNK
+--instance Zeros POStagSpanish where zero = NLPtypes.tagUNK
 --type Unk = Conll.Unk
 
 --test_spanish_tag1 :: IO ()
---test_spanish_tag1 = assertEqual (Vssp000::POSTagSpanish) (NLPtypes.parseTag "vssp000"::POSTagSpanish)
+--test_spanish_tag1 = assertEqual (Vssp000::POStagSpanish) (NLPtypes.parseTag "vssp000"::POSTagSpanish)
 
 

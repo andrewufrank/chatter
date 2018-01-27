@@ -14,10 +14,10 @@ tests = testGroup "NLP.Corpora.Conll"
         , testProperty "NER Tags round-trip" prop_nerTagsRoundTrip
         ]
 
-prop_tagsRoundTrip :: C.POSTag -> Bool
+prop_tagsRoundTrip :: C.POStag -> Bool
 prop_tagsRoundTrip tag = tag == (parseTag . fromTag) tag
 
-prop_nerTagsRoundTrip :: C.NERTag -> Bool
+prop_nerTagsRoundTrip :: C.NERtag -> Bool
 prop_nerTagsRoundTrip tag = tag == (fromRight . parseNERTag . fromNERTag) tag
 
 prop_chunkTagsRoundTrip :: C.Chunk -> Bool

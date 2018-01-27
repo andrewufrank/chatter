@@ -1,8 +1,8 @@
 = HEAD =
 
 = 0.9.2.0 =
-    changed class Tag to POSTags
-    changed all data Tag to POSTag (to conform to the other xTag data types)
+    changed class Tag to POStags
+    changed all data Tag to POStag (to conform to the other XXtag data types)
     added a number of modules to "other modules" in cabal component tests
 
 

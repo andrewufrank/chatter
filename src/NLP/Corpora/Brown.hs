@@ -3,7 +3,7 @@
 -- | The internal implementation of critical types in terms of the
 -- Brown corpus.
 module NLP.Corpora.Brown
- ( POSTag(..)
+ ( POStag(..)
  , Chunk(..)
  , parseTaggedSentences
 
@@ -25,7 +25,7 @@ import NLP.Types.Tree hiding (Chunk)
 import NLP.Corpora.Parsing (readPOS)
 
 -- | Parse a Brown corpus into TagagedSentences.
-parseTaggedSentences :: Text -> [TaggedSentence POSTag]
+parseTaggedSentences :: Text -> [TaggedSentence POStag]
 parseTaggedSentences rawCorpus = map readPOS $ T.lines rawCorpus
 
 data Chunk = C_NP -- ^ Noun Phrase.
@@ -40,9 +40,9 @@ instance Arbitrary Chunk where
 
 instance Serialize Chunk
 
-instance Serialize POSTag
+instance Serialize POStag
 
-instance T.POSTags POSTag where
+instance T.POStags POStag where
   fromTag = showBrownTag
 
   parseTag txt = case parseBrownTag txt of
@@ -59,10 +59,10 @@ instance T.POSTags POSTag where
 
   isDt tag = tag `elem` [DT, DTdollar, DT_pl_BEZ, DT_pl_MD, DTI, DTS, DTS_pl_BEZ, DTX]
 
-instance Arbitrary POSTag where
+instance Arbitrary POStag where
   arbitrary = elements [minBound ..]
 
-parseBrownTag :: Text -> Either Error POSTag
+parseBrownTag :: Text -> Either Error POStag
 parseBrownTag "(" = Right Op_Paren
 parseBrownTag ")" = Right Cl_Paren
 parseBrownTag "*" = Right Negator
@@ -87,7 +87,7 @@ tagTxtPatterns = [ ("-", "_")
 reversePatterns :: [(Text, Text)]
 reversePatterns = map (\(x,y) -> (y,x)) tagTxtPatterns
 
-showBrownTag :: POSTag -> Text
+showBrownTag :: POStag -> Text
 showBrownTag Op_Paren = "("
 showBrownTag Cl_Paren = ")"
 showBrownTag Negator = "*"
@@ -105,7 +105,7 @@ instance T.ChunkTag Chunk where
   parseChunk txt = toEitherErr $ readEither (T.unpack $ T.append "C_" txt)
   notChunk = C_O
 
-data POSTag = START -- ^ START tag, used in training.
+data POStag = START -- ^ START tag, used in training.
          | END -- ^ END tag, used in training.
          | Op_Paren -- ^ (
          | Cl_Paren -- ^ )

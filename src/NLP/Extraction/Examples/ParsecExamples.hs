@@ -36,23 +36,23 @@ import qualified NLP.Corpora.Brown as B
 --
 -- findClause skips over leading tokens, if needed, to locate a
 -- clause.
-findClause :: Extractor B.POSTag (ChunkOr B.Chunk B.POSTag)
+findClause :: Extractor B.POStag (ChunkOr B.Chunk B.POStag)
 findClause = followedBy anyToken clause
 
 -- | Find a Noun Phrase followed by a Verb Phrase
-clause :: Extractor B.POSTag (ChunkOr B.Chunk B.POSTag)
+clause :: Extractor B.POStag (ChunkOr B.Chunk B.POStag)
 clause = do
   np <- nounPhrase
   vp <- verbPhrase
   return $ mkChunk B.C_CL [np, vp]
 
-prepPhrase :: Extractor B.POSTag (ChunkOr B.Chunk B.POSTag)
+prepPhrase :: Extractor B.POStag (ChunkOr B.Chunk B.POStag)
 prepPhrase = do
   prep <- posTok B.IN
   np <- nounPhrase
   return $ mkChunk B.C_PP [POS_CN prep, np]
 
-nounPhrase :: Extractor B.POSTag (ChunkOr B.Chunk B.POSTag)
+nounPhrase :: Extractor B.POStag (ChunkOr B.Chunk B.POStag)
 nounPhrase = do
   nlist <- PC.many1 (try (posTok $ B.NN)
               <|> try (posTok $ B.DT)
@@ -62,7 +62,7 @@ nounPhrase = do
 
 --  VP: {<VB.*><NP|PP|CLAUSE>+$} # Chunk verbs and their arguments
 --  CLAUSE: {<NP><VP>}
-verbPhrase :: Extractor B.POSTag (ChunkOr B.Chunk B.POSTag)
+verbPhrase :: Extractor B.POStag (ChunkOr B.Chunk B.POStag)
 verbPhrase = do
   vp <- posPrefix "V"
   obj <- PC.many1 $ ((try clause)

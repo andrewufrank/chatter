@@ -66,6 +66,7 @@ Library
                      NLP.Corpora.Email
                      NLP.Corpora.Brown
                      NLP.Corpora.Conll
+                     NLP.Corpora.UD
                      NLP.Corpora.WikiNer
                      NLP.Corpora.French
                      NLP.Corpora.FrenchUD

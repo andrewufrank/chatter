@@ -25,7 +25,7 @@ import NLP.Tokenize.Text (Tokenizer, EitherList(..), defaultTokenizer)
 import NLP.Tokenize.Chatter (runTokenizer)
 import NLP.FullStop (segment)
 import NLP.Types ( tagUNK, Sentence, TaggedSentence(..), applyTags
-                 , POSTags, POSTagger(..), CaseSensitive(..), tokens, showTok)
+                 , POStags, POSTagger(..), CaseSensitive(..), tokens, showTok)
 import Text.Regex.TDFA
 import Text.Regex.TDFA.Text (compile)
 
@@ -39,7 +39,7 @@ taggerID = pack "NLP.POS.LiteralTagger"
 -- This uses a tokenizer adapted from the 'tokenize' package for a
 -- tokenizer, and Erik Kow's fullstop sentence segmenter as a sentence
 -- splitter.
-mkTagger :: POSTags t => Map Text t -> CaseSensitive -> Maybe (POSTagger t) -> POSTagger t
+mkTagger :: POStags t => Map Text t -> CaseSensitive -> Maybe (POSTagger t) -> POSTagger t
 mkTagger table sensitive mTgr = POSTagger
   { posTagger  = tag (canonicalize table) sensitive
   , posTrainer = \_ -> return $ mkTagger table sensitive mTgr
@@ -49,7 +49,7 @@ mkTagger table sensitive mTgr = POSTagger
   , posSerialize = encode (table, sensitive)
   , posID = taggerID
   }
-  where canonicalize :: POSTags t => Map Text t -> Map Text t
+  where canonicalize :: POStags t => Map Text t -> Map Text t
         canonicalize =
           case sensitive of
             Sensitive   -> id
@@ -117,13 +117,13 @@ protectTerms terms sensitive =
  --       | True    = E [Right x]
  --    where isUri u = any (`T.isPrefixOf` u) ["http://","ftp://","mailto:"]
 
-tag :: POSTags t => Map Text t -> CaseSensitive -> [Sentence] -> [TaggedSentence t]
+tag :: POStags t => Map Text t -> CaseSensitive -> [Sentence] -> [TaggedSentence t]
 tag table sensitive ss = map (tagSentence table sensitive) ss
 
-tagSentence :: POSTags t => Map Text t -> CaseSensitive -> Sentence -> TaggedSentence t
+tagSentence :: POStags t => Map Text t -> CaseSensitive -> Sentence -> TaggedSentence t
 tagSentence table sensitive sent = applyTags sent (map findTag $ tokens sent)
   where
---    findTag :: POSTags t => Token -> t
+--    findTag :: POStags t => Token -> t
     findTag txt = Map.findWithDefault tagUNK (canonicalize $ showTok txt) table
 
     canonicalize :: Text -> Text
@@ -134,7 +134,7 @@ tagSentence table sensitive sent = applyTags sent (map findTag $ tokens sent)
 
 -- | deserialization for Literal Taggers.  The serialization logic is
 -- in the posSerialize record of the POSTagger created in mkTagger.
-readTagger :: POSTags t => ByteString -> Maybe (POSTagger t) -> Either String (POSTagger t)
+readTagger :: POStags t => ByteString -> Maybe (POSTagger t) -> Either String (POSTagger t)
 readTagger bs backoff = do
   (model, sensitive) <- decode bs
   return $ mkTagger model sensitive backoff

@@ -44,7 +44,7 @@ chunkerID :: ByteString
 chunkerID = "NLP.Chunk.AvgPerceptronChunker"
 
 -- | deserialize an 'AvgPerceptronChunker' from a 'ByteString'.
-readChunker :: (ChunkTag c, POSTags t) => ByteString -> Either String (Chunker c t)
+readChunker :: (ChunkTag c, POStags t) => ByteString -> Either String (Chunker c t)
 readChunker bs = do
   model <- decode bs
   return $ mkChunker model
@@ -53,7 +53,7 @@ itterations :: Int
 itterations = 5
 
 -- | Create a chunker from a 'Perceptron'.
-mkChunker :: (ChunkTag c, POSTags t) => Perceptron -> Chunker c t
+mkChunker :: (ChunkTag c, POStags t) => Perceptron -> Chunker c t
 mkChunker per = Chunker { chChunker = chunk per
                         , chTrainer = \exs -> do
                             newPer <- trainInt itterations per exs
@@ -64,11 +64,11 @@ mkChunker per = Chunker { chChunker = chunk per
 
 
 -- | Chunk a list of POS-tagged sentence, generating a parse tree.
-chunk :: (ChunkTag c, POSTags t) => Perceptron -> [TaggedSentence t] -> [ChunkedSentence c t]
+chunk :: (ChunkTag c, POStags t) => Perceptron -> [TaggedSentence t] -> [ChunkedSentence c t]
 chunk per corpus = map (chunkSentence per) corpus
 
 -- | Chunk a single POS-tagged sentence.
-chunkSentence :: (ChunkTag c, POSTags t) => Perceptron -> TaggedSentence t -> ChunkedSentence c t
+chunkSentence :: (ChunkTag c, POStags t) => Perceptron -> TaggedSentence t -> ChunkedSentence c t
 chunkSentence per (TaggedSent sent) = let
 
   chunks = [Class "-START-"] ++ map (predictChunk per) features
@@ -89,7 +89,7 @@ predictChunk model feats =
   in theClass
 
 -- | Turn an IOB result into a tree.
-toTree :: (ChunkTag c, POSTags t) => [c] -> [POS t] -> ChunkedSentence c t
+toTree :: (ChunkTag c, POStags t) => [c] -> [POS t] -> ChunkedSentence c t
 toTree chunks tags =
   let groups = map (\g -> (head g, length g)) $ group chunks
 
@@ -98,42 +98,42 @@ toTree chunks tags =
 
   in ChunkedSent $ concatMap toChunkOr (groupTags groups tags)
 
-toChunkOr :: (ChunkTag c, POSTags t) => (c, [POS t]) -> [ChunkOr c t]
+toChunkOr :: (ChunkTag c, POStags t) => (c, [POS t]) -> [ChunkOr c t]
 toChunkOr (c, tags) | c == notChunk = map POS_CN tags
                     | otherwise     = [Chunk_CN (Chunk c $ map POS_CN tags)]
 
 
-trainInt :: (ChunkTag c, POSTags t) =>
+trainInt :: (ChunkTag c, POStags t) =>
             Int -- ^ The number of times to iterate over the training
                 -- data, randomly shuffling after each iteration. (@5@
                 -- is a reasonable choice.)
          -> Perceptron -- ^ The 'Perceptron' to train.
-         -> [ChunkedSentence c t] -- ^ The training data. (A list of @[(Text, POSTags)]@'s)
+         -> [ChunkedSentence c t] -- ^ The training data. (A list of @[(Text, POStags)]@'s)
          -> IO Perceptron    -- ^ A trained perceptron.  IO is needed
                              -- for randomization.
 trainInt itr per examples = trainCls itr per $ toClassLst $ map unzipChunks examples
 
-toClassLst :: (ChunkTag c, POSTags t) => [(TaggedSentence t, [c])] -> [(TaggedSentence t, [Class])]
+toClassLst :: (ChunkTag c, POStags t) => [(TaggedSentence t, [c])] -> [(TaggedSentence t, [Class])]
 toClassLst tagged = map (\(x, y)->(x, map (Class . T.unpack . fromChunk) y)) tagged
 
 -- | Copied directly from the AvgPerceptronTagger; should be generalized?
-trainCls :: POSTags t => Int -> Perceptron -> [(TaggedSentence t, [Class])] -> IO Perceptron
+trainCls :: POStags t => Int -> Perceptron -> [(TaggedSentence t, [Class])] -> IO Perceptron
 trainCls itr per examples = do
   trainingSet <- shuffleM $ concat $ take itr $ repeat examples
   return $ averageWeights $ foldl' trainSentence per trainingSet
 
 -- | start markers to ensure all features in context are valid,
 -- even for the first "real" tokens.
-startToks :: POSTags t => [POS t]
+startToks :: POStags t => [POS t]
 startToks = [POS startTag (Token "-START-")]
 
 -- | end markers to ensure all features are valid, even for
 -- the last "real" tokens.
-endToks :: POSTags t => [POS t]
+endToks :: POStags t => [POS t]
 endToks = [POS endTag (Token "-END-")]
 
 -- | Train on one sentence.
-trainSentence :: POSTags t => Perceptron -> (TaggedSentence t, [Class]) -> Perceptron
+trainSentence :: POStags t => Perceptron -> (TaggedSentence t, [Class]) -> Perceptron
 trainSentence per (TaggedSent sent, ts) = let
 
   -- This class needs to match the start token.
@@ -169,7 +169,7 @@ trainSentence per (TaggedSent sent, ts) = let
 -- ...             "prevpos+pos": "%s+%s" % (prevpos, pos),  [2]
 -- ...             "pos+nextpos": "%s+%s" % (pos, nextpos),
 -- ...             "tags-since-dt": tags_since_dt(sentence, i)}
-getFeatures :: POSTags t =>
+getFeatures :: POStags t =>
                [POS t] -- ^ The full sentence that this word is located in.
             -> Int   -- ^ The index of the current word.
             -> POS t -- ^ The current word/tag pair.
@@ -202,11 +202,11 @@ getFeatures tagged idx word prev = let
 
   in foldl' add Map.empty features
 
-tagsSinceDt :: POSTags t => [POS t] -> Text
+tagsSinceDt :: POStags t => [POS t] -> Text
 tagsSinceDt posToks =
   T.intercalate "-" $ tagsSinceHelper $ reverse posToks
 
-tagsSinceHelper :: POSTags t => [POS t] -> [Text]
+tagsSinceHelper :: POStags t => [POS t] -> [Text]
 tagsSinceHelper []      = []
 tagsSinceHelper (pt@(POS t _):ts)
     | isDt t    = []

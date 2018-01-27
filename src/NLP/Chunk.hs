@@ -51,17 +51,17 @@ import qualified NLP.Corpora.Conll as C
 import           Paths_chatter
 
 -- | A basic Phrasal chunker.
-defaultChunker :: IO (Chunker C.Chunk C.POSTag)
+defaultChunker :: IO (Chunker C.Chunk C.POStag)
 defaultChunker = conllChunker
 
 -- | Convenient function to load the Conll2000 Chunker.
-conllChunker :: IO (Chunker C.Chunk C.POSTag)
+conllChunker :: IO (Chunker C.Chunk C.POStag)
 conllChunker = do
   dir <- getDataDir
   loadChunker (dir </> "data" </> "models" </> "conll2000.chunk.model.gz")
 
 -- | Train a chunker on a set of additional examples.
-train :: (ChunkTag c, POSTags t) => Chunker c t -> [ChunkedSentence c t] -> IO (Chunker c t)
+train :: (ChunkTag c, POStags t) => Chunker c t -> [ChunkedSentence c t] -> IO (Chunker c t)
 train ch exs = chTrainer ch exs
 
 -- | Chunk a 'TaggedSentence' that has been produced by a Chatter
@@ -70,7 +70,7 @@ train ch exs = chTrainer ch exs
 --
 -- If you just want to see chunked output from standard text, you
 -- probably want 'chunkText' or 'chunkStr'.
-chunk :: (ChunkTag c, POSTags t) => Chunker c t -> [TaggedSentence t] -> [ChunkedSentence c t]
+chunk :: (ChunkTag c, POStags t) => Chunker c t -> [TaggedSentence t] -> [ChunkedSentence c t]
 chunk chk input = chChunker chk input
 
 
@@ -82,31 +82,31 @@ chunk chk input = chChunker chk input
 -- > > chunkText tgr chk "The brown dog jumped over the lazy cat."
 -- > "[NP The/DT brown/NN dog/NN] [VP jumped/VBD] [NP over/IN the/DT lazy/JJ cat/NN] ./."
 --
-chunkText :: (ChunkTag c, POSTags t) => POSTagger t -> Chunker c t -> Text -> Text
+chunkText :: (ChunkTag c, POStags t) => POSTagger t -> Chunker c t -> Text -> Text
 chunkText tgr chk input = T.intercalate " " $ map showChunkedSent $ chunk chk $ tag tgr input
 
 
 -- | A wrapper around 'chunkText' that packs strings.
-chunkStr :: (ChunkTag c, POSTags t) => POSTagger t -> Chunker c t -> String -> String
+chunkStr :: (ChunkTag c, POStags t) => POSTagger t -> Chunker c t -> String -> String
 chunkStr tgr chk str = T.unpack $ chunkText tgr chk $ T.pack str
 
 -- | The default table of tagger IDs to readTagger functions.  Each
 -- tagger packaged with Chatter should have an entry here.  By
 -- convention, the IDs use are the fully qualified module name of the
 -- tagger package.
-chunkerTable :: (ChunkTag c, POSTags t) => Map ByteString
+chunkerTable :: (ChunkTag c, POStags t) => Map ByteString
                (ByteString -> Either String (Chunker c t))
 chunkerTable = Map.fromList
   [ (Avg.chunkerID, Avg.readChunker)
   ]
 
 -- | Store a 'Chunker' to disk.
-saveChunker :: (ChunkTag c, POSTags t) => Chunker c t -> FilePath -> IO ()
+saveChunker :: (ChunkTag c, POStags t) => Chunker c t -> FilePath -> IO ()
 saveChunker chunker file = BS.writeFile file (serialize chunker)
 
 -- | Load a 'Chunker' from disk, optionally gunzipping if
 -- needed. (based on file extension)
-loadChunker :: (ChunkTag c, POSTags t) => FilePath -> IO (Chunker c t)
+loadChunker :: (ChunkTag c, POStags t) => FilePath -> IO (Chunker c t)
 loadChunker file = do
   content <- getContent file
   case deserialize chunkerTable content of
@@ -118,10 +118,10 @@ loadChunker file = do
                  | otherwise               = BS.readFile f
 
 
-serialize :: (ChunkTag c, POSTags t) => Chunker c t -> ByteString
+serialize :: (ChunkTag c, POStags t) => Chunker c t -> ByteString
 serialize chunker = encode ( chId chunker, chSerialize chunker)
 
-deserialize :: (ChunkTag c, POSTags t) =>
+deserialize :: (ChunkTag c, POStags t) =>
                Map ByteString
                   (ByteString -> Either String (Chunker c t))
             -> ByteString

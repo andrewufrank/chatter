@@ -1,7 +1,6 @@
 flags: {}
 packages:
 - '.'
-- /home/frank/Workspace8/uniform/uniform-strings/
 extra-deps:
 - fullstop-0.1.4
 - tokenize-0.3.0

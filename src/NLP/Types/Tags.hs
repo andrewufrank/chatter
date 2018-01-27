@@ -18,7 +18,7 @@ import NLP.Types.General (Error, toEitherErr)
 
 -- | The class of named entity sets.  This typeclass can be defined
 -- entirely in terms of the required class constraints.
-class (Ord a, Eq a, Read a, Show a, Generic a, Serialize a) => NERTag a where
+class (Ord a, Eq a, Read a, Show a, Generic a, Serialize a) => NERtags a where
   fromNERTag :: a -> Text
   fromNERTag = T.pack . show
 
@@ -49,7 +49,7 @@ class (Ord a, Eq a, Read a, Show a, Generic a, Serialize a) => ChunkTag a where
 -- that that is done correctly.
 --
 -- This /may/ get renamed to POSTag at some later date.
-class (Ord a, Eq a, Read a, Show a, Generic a, Serialize a) => POSTags a where
+class (Ord a, Eq a, Read a, Show a, Generic a, Serialize a) => POStags a where
   fromTag :: a -> Text
   parseTag :: Text -> a
   tagUNK :: a
@@ -76,8 +76,8 @@ newtype RawTag = RawTag Text
 
 instance Serialize RawTag
 
--- | POSTags instance for unknown tagsets.
-instance POSTags RawTag where
+-- | POStags instance for unknown tagsets.
+instance POStags RawTag where
   fromTag (RawTag t) = t
 
   parseTag t = RawTag t

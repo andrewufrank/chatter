@@ -20,10 +20,10 @@ main = do
   let output = last args
       corpora = init args
 
-      avgPerTagger :: POSTagger B.POSTag
+      avgPerTagger :: POSTagger B.POStag
       avgPerTagger = Avg.mkTagger Avg.emptyPerceptron Nothing
 
-      initTagger :: POSTagger B.POSTag
+      initTagger :: POSTagger B.POStag
       initTagger   = UT.mkTagger Map.empty (Just avgPerTagger)
   rawCorpus <- mapM T.readFile corpora
   let taggedCorpora = map readPOS $ concatMap T.lines $ rawCorpus

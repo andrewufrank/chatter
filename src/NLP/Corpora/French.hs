@@ -51,7 +51,7 @@ import  NLP.Types.Tags as NLPtypes
 --type POSTagEng = Conll.Tag   -- renames the ConllTag
 --instance CharChains2 POSTagEng Text
 
-data POSTagFrench =   -- copied from http://universaldependencies.org/u/pos/
+data POStagFrench =   -- copied from http://universaldependencies.org/u/pos/
     START  | -- START tag, used in training.
     END | --END tag, used in training.
     DET |
@@ -88,7 +88,7 @@ data POSTagFrench =   -- copied from http://universaldependencies.org/u/pos/
         deriving (Read, Show, Ord, Eq, Generic, Enum, Bounded)
 
 
-instance NLPtypes.POSTags POSTagFrench where
+instance NLPtypes.POStags POStagFrench where
 --parseTag :: Text -> POSTag
     parseTag txt = case readTag txt of
                    Left  _ -> NLPtypes.tagUNK
@@ -103,11 +103,11 @@ instance NLPtypes.POSTags POSTagFrench where
 
     isDt tag = tag `elem` []  -- unknown what is a det here?
 
-instance Arbitrary POSTagFrench where
+instance Arbitrary POStagFrench where
   arbitrary = elements [minBound ..]
-instance Serialize POSTagFrench
+instance Serialize POStagFrench
 
-readTag :: Text -> ErrOrVal POSTagFrench
+readTag :: Text -> ErrOrVal POStagFrench
 --readTag "#" = Right Hash
 --readTag "$" = Right Dollar
 --readTag "(" = Right Op_Paren
@@ -138,7 +138,7 @@ tagTxtPatterns = [ ("$", "Dollar")    -- because dollar is always in first posit
 reversePatterns :: [(Text, Text)]
 reversePatterns = map (\(x,y) -> (y,x)) tagTxtPatterns
 
-showTag :: POSTagFrench -> Text
+showTag :: POStagFrench -> Text
 --showTag Hash = "#"
 --showTag Op_Paren = "("
 --showTag Cl_Paren = ")"
@@ -153,11 +153,11 @@ showTag tag = replaceAll reversePatterns (s2t $ show tag)
 replaceAll :: [(Text, Text)] -> (Text -> Text)
 replaceAll patterns = foldl (.) id (map (uncurry  T.replace) patterns)
 
---readTag :: Text -> ErrOrVal POSTagFrench
+--readTag :: Text -> ErrOrVal POStagFrench
 --readTag txt = maybe2errorP . read . t2s $ txt
 --
 --maybe2errorP  :: Maybe a -> ErrOrVal a
---maybe2errorP Nothing = Left "readTag POSTagFrench 34232"
+--maybe2errorP Nothing = Left "readTag POStagFrench 34232"
 --maybe2errorP (Just a) = Right a
 
 readOrErr :: Read a => Text -> Either Text a
@@ -165,22 +165,22 @@ readOrErr    t = case (readEither (t2s t)) of
                         Left msg -> Left (s2t msg)
                         Right a -> Right a
 
---instance CharChains2 POSTagFrench String where
+--instance CharChains2 POStagFrench String where
 --    show' =  show
---instance CharChains2 POSTagFrench Text where
+--instance CharChains2 POStagFrench Text where
 --    show' =  s2t . show
 --
---instance Zeros POSTagFrench where zero = NLPtypes.tagUNK
+--instance Zeros POStagFrench where zero = NLPtypes.tagUNK
 ----type Unk = Conll.Unk
 
 --test_french_tag1 :: IO ()
---test_french_tag1 = assertEqual (Dollaropenbracket::POSTagFrench) (parseTag "$["::POSTagFrench)
+--test_french_tag1 = assertEqual (Dollaropenbracket::POStagFrench) (parseTag "$["::POStagFrench)
 --test_french_tag2 :: IO ()
---test_french_tag2 = assertEqual (Dollarpoint::POSTagFrench) (parseTag "$."::POSTagFrench)
+--test_french_tag2 = assertEqual (Dollarpoint::POStagFrench) (parseTag "$."::POStagFrench)
 --test_french_tag3 :: IO ()
---test_french_tag3 = assertEqual (Dollarcomma::POSTagFrench) (parseTag "$,"::POSTagFrench)
+--test_french_tag3 = assertEqual (Dollarcomma::POStagFrench) (parseTag "$,"::POStagFrench)
 --test_french_tag4 :: IO ()
---test_french_tag4 = assertEqual (VVINF::POSTagFrench) (parseTag "VVINF"::POSTagFrench)
+--test_french_tag4 = assertEqual (VVINF::POStagFrench) (parseTag "VVINF"::POStagFrench)
 --
 --test_french_tagR :: IO ()
 --test_french_tagR = assertEqual ("Dollaropenbracket"::Text) (replaceAll tagTxtPatterns (toUpper'   "$[")::Text)

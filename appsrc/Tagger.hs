@@ -17,6 +17,6 @@ main = do
   let modelFile = args!!0
       sentence  = args!!1
   putStrLn "Loading model..."
-  tagger <- (loadTagger modelFile:: IO (POSTagger B.POSTag))
+  tagger <- (loadTagger modelFile:: IO (POSTagger B.POStag))
   putStrLn "...model loaded."
   T.putStrLn $ tagText tagger (T.pack sentence)

@@ -33,31 +33,31 @@ data IOBChunk chunk tag = BChunk (POS tag) chunk -- ^ Beging marker.
                         | OChunk (POS tag) -- ^ Not in a chunk.
   deriving (Read, Show, Eq)
 
-getPOS :: (ChunkTag c, POSTags t) => IOBChunk c t -> POS t
+getPOS :: (ChunkTag c, POStags t) => IOBChunk c t -> POS t
 getPOS (BChunk pos _) = pos
 getPOS (IChunk pos _) = pos
 getPOS (OChunk pos)   = pos
 
-instance (ChunkTag c, Arbitrary c, Arbitrary t, POSTags t) => Arbitrary (IOBChunk c t) where
+instance (ChunkTag c, Arbitrary c, Arbitrary t, POStags t) => Arbitrary (IOBChunk c t) where
   arbitrary = elements =<< do
                 ic <- IChunk <$> arbitrary <*> arbitrary
                 bc <- BChunk <$> arbitrary <*> arbitrary
                 oc <- OChunk <$> arbitrary
                 return [ic, bc, oc]
 
-toTaggedSentence :: (ChunkTag c, POSTags t) => [IOBChunk c t] -> TaggedSentence t
+toTaggedSentence :: (ChunkTag c, POStags t) => [IOBChunk c t] -> TaggedSentence t
 toTaggedSentence iobChunks = TaggedSent $ map getPOS iobChunks
 
 
 -- | Parse an IOB-chunk encoded line of text.
 --
 -- Assumes that the line has three space-delimeted entries, in the format:
--- > token POSTag IOBChunk
+-- > token POStag IOBChunk
 -- For example:
--- > > parseIOBLine "We PRP B-NP" :: IOBChunk B.Chunk B.POSTags
+-- > > parseIOBLine "We PRP B-NP" :: IOBChunk B.Chunk B.POStags
 -- > BChunk (POS B.PRP (Token "We")) B.C_NP
 --
-parseIOBLine :: (ChunkTag chunk, POSTags tag) => Text -> Either Error (IOBChunk chunk tag)
+parseIOBLine :: (ChunkTag chunk, POStags tag) => Text -> Either Error (IOBChunk chunk tag)
 parseIOBLine txt =
   case T.words txt of
     (tokTxt:tagTxt:iobTxt:_) ->
@@ -66,7 +66,7 @@ parseIOBLine txt =
       in iobBuilder iobTxt tag
     _ -> Left ("not enough words in IOB line: \"" <> txt <> "\"")
 
-iobBuilder :: (ChunkTag c, POSTags t) => Text -> (POS t -> Either Error (IOBChunk c t))
+iobBuilder :: (ChunkTag c, POStags t) => Text -> (POS t -> Either Error (IOBChunk c t))
 iobBuilder iobTxt | "I-" `T.isPrefixOf` iobTxt = \tag -> (IChunk tag) <$> chunk
                   | "B-" `T.isPrefixOf` iobTxt = \tag -> (BChunk tag) <$> chunk
                   | otherwise                  = \tag -> Right (OChunk tag)
@@ -75,11 +75,11 @@ iobBuilder iobTxt | "I-" `T.isPrefixOf` iobTxt = \tag -> (IChunk tag) <$> chunk
 
 
 -- | Turn an IOB result into a tree.
-toChunkTree :: (ChunkTag c, POSTags t) => [IOBChunk c t] -> ChunkedSentence c t
+toChunkTree :: (ChunkTag c, POStags t) => [IOBChunk c t] -> ChunkedSentence c t
 toChunkTree chunks = ChunkedSent $ toChunkOr chunks
 
   where
-    toChunkOr :: (ChunkTag c, POSTags t) => [IOBChunk c t] -> [ChunkOr c t]
+    toChunkOr :: (ChunkTag c, POStags t) => [IOBChunk c t] -> [ChunkOr c t]
     toChunkOr [] = []
     toChunkOr ((OChunk pos):rest)       = POS_CN pos : toChunkOr rest
     toChunkOr (ch:rest) = case ch of
@@ -98,12 +98,12 @@ toChunkTree chunks = ChunkedSent $ toChunkOr chunks
         isIChunk _            = False
 
 -- | Parse an IOB-encoded corpus.
-parseIOB :: (ChunkTag chunk, POSTags tag) => Text -> Either Error [[IOBChunk chunk tag]]
+parseIOB :: (ChunkTag chunk, POStags tag) => Text -> Either Error [[IOBChunk chunk tag]]
 parseIOB corpora =
   let sentences = getSentences corpora
   in sequence $ map parseSentence sentences
 
-parseSentence :: (ChunkTag chunk, POSTags tag) => [Text] -> Either Error [IOBChunk chunk tag]
+parseSentence :: (ChunkTag chunk, POStags tag) => [Text] -> Either Error [IOBChunk chunk tag]
 parseSentence input = sequence (map parseIOBLine input)
 
 -- | Just split a body of text into lines, and then into "paragraphs".

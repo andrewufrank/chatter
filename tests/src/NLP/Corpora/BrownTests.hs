@@ -12,6 +12,6 @@ tests = testGroup "NLP.Corpora.Brown"
         [ testProperty "Brown POS Tags round-trip" prop_tagsRoundTrip
         ]
 
-prop_tagsRoundTrip :: B.POSTag -> Bool
+prop_tagsRoundTrip :: B.POStag -> Bool
 prop_tagsRoundTrip tag = tag == (parseTag . fromTag) tag
 

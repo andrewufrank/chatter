@@ -38,14 +38,14 @@ import Data.Text   as T (replace)
 import Text.Read (readEither)
 --import qualified NLP.Corpora.Conll      as Conll
 
-import qualified NLP.Types.Tags as NLPtypes
+import qualified NLP.Types.Tags as NLP
 --import      NLP.Corpora.Conll
 --import      NLP.Corpora.Conll   as Conll
 
 --type PosTagEng = Conll.Tag   -- renames the ConllTag
 --instance CharChains2 PosTagEng Text
 
-data POSTagGerman =   -- copied from http://universaldependencies.org/u/pos/
+data POStagGerman =   -- copied from http://universaldependencies.org/u/pos/
     START  | -- START tag, used in training.
     END | --END tag, used in training.
     Dollarpoint | --    $.       |   --	0
@@ -106,10 +106,10 @@ data POSTagGerman =   -- copied from http://universaldependencies.org/u/pos/
         deriving (Read, Show, Ord, Eq, Generic, Enum, Bounded)
 
 
-instance NLPtypes.POSTags POSTagGerman where
+instance NLP.POStags POStagGerman where
 --parseTag :: Text -> PosTag
     parseTag txt = case readTag txt of
-                   Left  _ -> NLPtypes.tagUNK
+                   Left  _ -> NLP.tagUNK
                    Right t -> t
 
     tagUNK = Germanunk
@@ -121,11 +121,11 @@ instance NLPtypes.POSTags POSTagGerman where
 
     isDt tag = tag `elem` []  -- unknown what is a det here?
 
-instance Arbitrary POSTagGerman where
+instance Arbitrary POStagGerman where
   arbitrary = elements [minBound ..]
-instance Serialize POSTagGerman
+instance Serialize POStagGerman
 
-readTag :: Text -> ErrOrVal POSTagGerman
+readTag :: Text -> ErrOrVal POStagGerman
 --readTag "#" = Right Hash
 --readTag "$" = Right Dollar
 --readTag "(" = Right Op_Paren
@@ -153,7 +153,7 @@ tagTxtPatterns = [ ("$", "Dollar")    -- because dollar is always in first posit
 reversePatterns :: [(Text, Text)]
 reversePatterns = map (\(x,y) -> (y,x)) tagTxtPatterns
 
-showTag :: POSTagGerman -> Text
+showTag :: POStagGerman -> Text
 --showTag Hash = "#"
 --showTag Op_Paren = "("
 --showTag Cl_Paren = ")"
@@ -168,11 +168,11 @@ showTag tag = replaceAll reversePatterns (s2t $ show tag)
 replaceAll :: [(Text, Text)] -> (Text -> Text)
 replaceAll patterns = foldl (.) id (map (uncurry  T.replace) patterns)
 
---readTag :: Text -> ErrOrVal POSTagGerman
+--readTag :: Text -> ErrOrVal POStagGerman
 --readTag txt = maybe2errorP . read . t2s $ txt
 --
 --maybe2errorP  :: Maybe a -> ErrOrVal a
---maybe2errorP Nothing = Left "readTag POSTagGerman 34232"
+--maybe2errorP Nothing = Left "readTag POStagGerman 34232"
 --maybe2errorP (Just a) = Right a
 
 readOrErr :: Read a => Text -> Either Text a
@@ -180,12 +180,12 @@ readOrErr    t = case (readEither (t2s t)) of
                         Left msg -> Left (s2t msg)
                         Right a -> Right a
 
---instance CharChains2 POSTagGerman String where
+--instance CharChains2 POStagGerman String where
 --    show' =  show
---instance CharChains2 POSTagGerman Text where
+--instance CharChains2 POStagGerman Text where
 --    show' =  s2t . show
 --
---instance Zeros POSTagGerman where zero = NLPtypes.tagUNK
+--instance Zeros POStagGerman where zero = NLPtypes.tagUNK
 ----type Unk = Conll.Unk
 
 

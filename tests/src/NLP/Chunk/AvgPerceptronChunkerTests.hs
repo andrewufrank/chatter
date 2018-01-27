@@ -62,9 +62,9 @@ tests = withResource loadChunkers (\_ -> return ()) $ \getChunkers ->
       return (def, naive)
 
 
-naiveChunker :: IO (Chunker C.Chunk C.POSTag)
+naiveChunker :: IO (Chunker C.Chunk C.POStag)
 naiveChunker = do
-  let chunker :: Chunker C.Chunk C.POSTag
+  let chunker :: Chunker C.Chunk C.POStag
       chunker = mkChunker emptyPerceptron
   train chunker
          [ChunkedSent [ mkChunk C.NP
@@ -76,7 +76,7 @@ naiveChunker = do
                         ]
          ]
 
-test_chunk :: IO (Chunker C.Chunk C.POSTag) -> (Text, [ChunkedSentence C.Chunk C.POSTag]) -> TestTree
+test_chunk :: IO (Chunker C.Chunk C.POStag) -> (Text, [ChunkedSentence C.Chunk C.POStag]) -> TestTree
 test_chunk genChunker (txt, oracle) = testCase (T.unpack txt) $ do
   chk <- genChunker
   tgr <- conllTagger
