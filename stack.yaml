@@ -1,7 +1,10 @@
 flags: {}
 packages:
 - '.'
+- location: /home/frank/Workspace8/TreeTagSets
+  extra-dep: true
 extra-deps:
 - fullstop-0.1.4
+- test-invariant-0.4.5.0
 - tokenize-0.3.0
 resolver: lts-9.1

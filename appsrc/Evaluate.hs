@@ -6,10 +6,11 @@ import qualified Data.Text.IO as T
 
 import System.Environment (getArgs)
 
-import NLP.Corpora.Parsing
+import NLP.Corpora.Parsing (readPOS)
 import NLP.POS (eval, loadTagger)
 import NLP.Types (POSTagger, unTS)
 import qualified NLP.Corpora.Brown as B
+--import  NLP.Corpora.Brown
 
 main :: IO ()
 main = do

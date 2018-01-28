@@ -65,6 +65,7 @@ instance (ChunkTag c, Arbitrary c, Arbitrary t, POStags t) =>
 data TaggedSentence tag = TaggedSent [POS tag]
   deriving (Read, Show, Eq)
 
+
 instance (Arbitrary t, POStags t) => Arbitrary (TaggedSentence t) where
   arbitrary = TaggedSent <$> arbitrary
 

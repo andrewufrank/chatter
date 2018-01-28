@@ -1,4 +1,5 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings
+    , FlexibleContexts #-}
 {-|
 Module      : NLP.Chunk
 Description : Phrase Chunking facilities.
@@ -47,15 +48,15 @@ import           NLP.Chunk.AvgPerceptronChunker (Chunker(..))
 import qualified NLP.Chunk.AvgPerceptronChunker as Avg
 
 import qualified NLP.Corpora.Conll as C
-
+import NLP.Types ()
 import           Paths_chatter
 
 -- | A basic Phrasal chunker.
-defaultChunker :: IO (Chunker C.Chunk C.POStag)
+defaultChunker ::  (ChunkTag C.Chunk, POStags C.POStag) => IO (Chunker C.Chunk C.POStag)
 defaultChunker = conllChunker
 
 -- | Convenient function to load the Conll2000 Chunker.
-conllChunker :: IO (Chunker C.Chunk C.POStag)
+conllChunker :: (ChunkTag C.Chunk, POStags C.POStag) => IO (Chunker C.Chunk C.POStag)
 conllChunker = do
   dir <- getDataDir
   loadChunker (dir </> "data" </> "models" </> "conll2000.chunk.model.gz")

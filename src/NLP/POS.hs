@@ -1,4 +1,5 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings
+    , FlexibleContexts #-}
 {-|
 Module      : NLP.POS
 Description : Part-of-Speech tagging facilities.
@@ -76,17 +77,17 @@ import qualified NLP.Corpora.Conll as C
 import           Paths_chatter
 
 -- | A basic POS tagger.
-defaultTagger :: IO (POSTagger C.POStag)
+defaultTagger :: (POStags C.POStag) => IO (POSTagger C.POStag)
 defaultTagger = conllTagger
 
 -- | A POS tagger that has been trained on the Conll 2000 POS tags.
-conllTagger :: IO (POSTagger C.POStag)
+conllTagger :: (POStags C.POStag) => IO (POSTagger C.POStag)
 conllTagger = do
   dir <- getDataDir
   loadTagger (dir </> "data" </> "models" </> "conll2000.pos.model.gz")
 
 -- | A POS tagger trained on a subset of the Brown corpus.
-brownTagger :: IO (POSTagger B.POStag)
+brownTagger :: (POStags B.POStag) => IO (POSTagger B.POStag)
 brownTagger = do
   dir <- getDataDir
   loadTagger (dir </> "data" </> "models" </> "brown.pos.model.gz")

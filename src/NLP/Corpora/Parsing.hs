@@ -29,3 +29,7 @@ readPOSWith parser str = TaggedSent $ map toTagged $ T.words str
 safeInit :: Text -> Text
 safeInit str | T.length str == 0 = str
              | otherwise         = T.init str
+
+---- | Parse a NN corpus into TagagedSentences.
+parseTaggedSentences ::  POStags postag => Text -> [TaggedSentence postag]
+parseTaggedSentences rawCorpus = map readPOS $ T.lines rawCorpus

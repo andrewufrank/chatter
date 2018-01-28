@@ -12,6 +12,8 @@ import NLP.POS (saveTagger, train)
 import NLP.Types (POSTagger, Error)
 import NLP.Types.IOB
 
+import NLP.Corpora.Parsing
+
 import qualified NLP.Corpora.Brown as B
 import qualified NLP.Corpora.Conll as C
 
@@ -28,7 +30,7 @@ main = do
       initTagger   = UT.mkTagger Map.empty (Just avgPerTagger)
 
   rawCorpus <- mapM T.readFile corpora
-  let taggedSentences = B.parseTaggedSentences $ T.concat rawCorpus
+  let taggedSentences = parseTaggedSentences $ T.concat rawCorpus
   tagger <- train initTagger taggedSentences
   saveTagger tagger output
 

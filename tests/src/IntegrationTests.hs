@@ -54,8 +54,8 @@ tests = withResource loadTaggers (\_ -> return ()) $ \getTaggers ->
                    ]
   where
     loadTaggers = do
-      brown <- brownTagger :: IO (POSTagger B.POSTag)
-      def <- defaultTagger :: IO (POSTagger C.POSTag)
+      brown <- brownTagger :: IO (POSTagger B.POStag)
+      def <- defaultTagger :: IO (POSTagger C.POStag)
       return (brown, def)
 
 examples :: [Text]
@@ -66,7 +66,7 @@ examples = [ "This/dt is/bez a/at test/nn ./."
 
 testSerialization :: [Text]  -- ^ A training corpus.  One sentence per entry.
                   -> ( String    -- ^ The name of the POS tagger.
-                     , POSTagger B.POSTag) -- ^ An empty (untrained) POS tagger.
+                     , POSTagger B.POStag) -- ^ An empty (untrained) POS tagger.
                   -> TestTree
 testSerialization training (name, newTagger) = testCase name doTest
   where
@@ -74,7 +74,7 @@ testSerialization training (name, newTagger) = testCase name doTest
     doTest = do
       preTagger <- train newTagger $ map readPOS training
 
-      let ePostTagger :: Either String (POSTagger B.POSTag)
+      let ePostTagger :: Either String (POSTagger B.POStag)
           ePostTagger = deserialize taggerTable (serialize preTagger)
       case ePostTagger of
         Left err -> assertFailure ("Tagger did not deserialize: "++err)

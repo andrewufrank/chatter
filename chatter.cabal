@@ -1,5 +1,5 @@
 name:                chatter
-version:             0.9.2.0
+version:             0.9.2.1
 synopsis:            A library of simple NLP algorithms.
 description:         chatter is a collection of simple Natural Language
                      Processing algorithms.
@@ -57,22 +57,22 @@ Library
                      NLP.Chunk.AvgPerceptronChunker
                      NLP.ML.AvgPerceptron
                      NLP.Types
-                     NLP.Types.General
+--                     NLP.Types.General
                      NLP.Types.IOB
-                     NLP.Types.Tags
+--                     NLP.Types.Tags
                      NLP.Types.Tree
                      NLP.Tokenize.Chatter
                      NLP.Corpora.Parsing
                      NLP.Corpora.Email
-                     NLP.Corpora.Brown
-                     NLP.Corpora.Conll
-                     NLP.Corpora.UD
-                     NLP.Corpora.WikiNer
-                     NLP.Corpora.French
-                     NLP.Corpora.FrenchUD
-                     NLP.Corpora.German
-                     NLP.Corpora.Spanish
-                     NLP.Corpora.ItalianTinT
+--                     NLP.Corpora.Brown
+--                     NLP.Corpora.Conll
+--                     NLP.Corpora.UD
+--                     NLP.Corpora.WikiNer
+--                     NLP.Corpora.French
+--                     NLP.Corpora.FrenchUD
+--                     NLP.Corpora.German
+--                     NLP.Corpora.Spanish
+--                     NLP.Corpora.ItalianTinT
                      NLP.Similarity.VectorSim
                      NLP.Extraction.Parsec
                      NLP.Extraction.Examples.ParsecExamples
@@ -102,7 +102,8 @@ Library
                      QuickCheck,
                      quickcheck-instances,
                      unordered-containers,
-                     hashable
+                     hashable,
+                     TreeTagSets
 
 
 
@@ -119,7 +120,8 @@ Executable tagPOS
                      text >= 0.11.3.0,
                      base >= 4.6 && <= 6,
                      bytestring >= 0.10.0.0,
-                     cereal >= 0.4.0.1 && <= 0.5.4.0
+                     cereal >= 0.4.0.1 && <= 0.5.4.0,
+                     TreeTagSets
 
    ghc-options:      -Wall -main-is Tagger -rtsopts
 
@@ -134,7 +136,8 @@ Executable trainPOS
                      base >= 4.6 && <= 6,
                      bytestring >= 0.10.0.0,
                      cereal >= 0.4.0.1 && <= 0.5.4.0,
-                     containers >= 0.5.0.0
+                     containers >= 0.5.0.0,
+                     TreeTagSets
 
    ghc-options:      -Wall -main-is POSTrainer -rtsopts
 
@@ -149,14 +152,15 @@ Executable trainChunker
                      base >= 4.6 && <= 6,
                      bytestring >= 0.10.0.0,
                      cereal >= 0.4.0.1 && <= 0.5.4.0,
-                     containers >= 0.5.0.0
+                     containers >= 0.5.0.0,
+                     TreeTagSets
 
    ghc-options:      -Wall -main-is ChunkTrainer -rtsopts
 
 Executable trainNER
    default-language: Haskell2010
    Main-Is:          NERTrainer.hs
-   hs-source-dirs:   appsrc
+   hs-source-dirs:   appsrc, src
 
    Build-depends:    chatter,
                      filepath >= 1.3.0.1,
@@ -164,9 +168,34 @@ Executable trainNER
                      base >= 4.6 && <= 6,
                      bytestring >= 0.10.0.0,
                      cereal >= 0.4.0.1 && <= 0.5.4.0,
-                     containers >= 0.5.0.0
+                     containers >= 0.5.0.0,
+                     QuickCheck,
+                     quickcheck-instances,
+                     deepseq,
+                     tokenize,
+                     array,
+                     fullstop,
+                     regex-tdfa,
+                     regex-tdfa-text,
+                     random-shuffle,
+                     zlib,
+                     TreeTagSets
 
    ghc-options:      -Wall -main-is NERTrainer -rtsopts
+   Other-modules:
+        NLP.Chunk
+        NLP.Chunk.AvgPerceptronChunker
+        NLP.Corpora.Parsing
+        NLP.Corpora.WikiNer
+        NLP.ML.AvgPerceptron
+        NLP.POS
+        NLP.POS.AvgPerceptronTagger
+        NLP.POS.LiteralTagger
+        NLP.POS.UnambiguousTagger
+        NLP.Tokenize.Chatter
+        NLP.Types
+        NLP.Types.IOB
+        NLP.Types.Tree
 
 
 Executable eval
@@ -180,7 +209,9 @@ Executable eval
                      base >= 4.6 && <= 6,
                      bytestring >= 0.10.0.0,
                      cereal >= 0.4.0.1 && <= 0.5.4.0,
-                     containers >= 0.5.0.0
+                     containers >= 0.5.0.0,
+                     TreeTagSets
+
 
    ghc-options:      -Wall -main-is Evaluate -rtsopts
 
@@ -221,8 +252,8 @@ test-suite tests
                      NLP.Extraction.ParsecTests
                      NLP.TypesTests
                      NLP.Chunk.AvgPerceptronChunkerTests
-                     NLP.Corpora.BrownTests
-                     NLP.Corpora.ConllTests
+--                     NLP.Corpora.BrownTests
+--                     NLP.Corpora.ConllTests
                      NLP.POS.LiteralTaggerTests
                      NLP.Types.IOBTests
                      NLP.Types.TreeTests
@@ -246,6 +277,8 @@ test-suite tests
                      tasty-quickcheck,
                      tasty-hunit,
                      tasty-ant-xml,
-                     unordered-containers
+                     unordered-containers,
+                     TreeTagSets
+
 
    ghc-options:      -Wall -auto-all -caf-all

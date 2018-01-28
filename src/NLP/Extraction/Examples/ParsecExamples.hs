@@ -1,4 +1,5 @@
-{-# LANGUAGE OverloadedStrings    #-}
+{-# LANGUAGE OverloadedStrings
+    , FlexibleContexts   #-}
 -- | Example parsing with Parsec.
 --
 -- This example shows how the following grammar, from NLTK, can be
@@ -36,23 +37,23 @@ import qualified NLP.Corpora.Brown as B
 --
 -- findClause skips over leading tokens, if needed, to locate a
 -- clause.
-findClause :: Extractor B.POStag (ChunkOr B.Chunk B.POStag)
+findClause :: (POStags B.POStag, ChunkTag B.Chunk) => Extractor B.POStag (ChunkOr B.Chunk B.POStag)
 findClause = followedBy anyToken clause
 
 -- | Find a Noun Phrase followed by a Verb Phrase
-clause :: Extractor B.POStag (ChunkOr B.Chunk B.POStag)
+clause :: (POStags B.POStag, ChunkTag B.Chunk) => Extractor B.POStag (ChunkOr B.Chunk B.POStag)
 clause = do
   np <- nounPhrase
   vp <- verbPhrase
   return $ mkChunk B.C_CL [np, vp]
 
-prepPhrase :: Extractor B.POStag (ChunkOr B.Chunk B.POStag)
+prepPhrase ::(POStags B.POStag, ChunkTag B.Chunk) =>  Extractor B.POStag (ChunkOr B.Chunk B.POStag)
 prepPhrase = do
   prep <- posTok B.IN
   np <- nounPhrase
   return $ mkChunk B.C_PP [POS_CN prep, np]
 
-nounPhrase :: Extractor B.POStag (ChunkOr B.Chunk B.POStag)
+nounPhrase :: (POStags B.POStag, ChunkTag B.Chunk) => Extractor B.POStag (ChunkOr B.Chunk B.POStag)
 nounPhrase = do
   nlist <- PC.many1 (try (posTok $ B.NN)
               <|> try (posTok $ B.DT)
@@ -62,7 +63,7 @@ nounPhrase = do
 
 --  VP: {<VB.*><NP|PP|CLAUSE>+$} # Chunk verbs and their arguments
 --  CLAUSE: {<NP><VP>}
-verbPhrase :: Extractor B.POStag (ChunkOr B.Chunk B.POStag)
+verbPhrase :: (POStags B.POStag, ChunkTag B.Chunk) => Extractor B.POStag (ChunkOr B.Chunk B.POStag)
 verbPhrase = do
   vp <- posPrefix "V"
   obj <- PC.many1 $ ((try clause)
